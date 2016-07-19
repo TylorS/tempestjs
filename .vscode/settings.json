@@ -1,0 +1,14 @@
+// Place your settings in this file to overwrite default and user settings.
+{
+    "editor.fontFamily": "Fira Code Medium",
+    "editor.tabSize": 2,
+    "editor.rulers": [80, 160],
+    "editor.insertSpaces": true,
+    "editor.wrappingColumn": 160,
+    "editor.fontLigatures": true,
+
+    "typescript.tsdk": "node_modules/typescript/lib",
+    "typescript.tsserver.experimentalAutoBuild": true,
+
+    "tslint.configFile": "tslint.json"
+}
