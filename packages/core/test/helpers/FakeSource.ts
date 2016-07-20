@@ -1,7 +1,7 @@
 import { Source, Sink, Scheduler } from '../../src/index'
 
 export interface SourceAssertions<T> {
-  run?: (sink: Sink<T>, scheduler: Scheduler<any>) => any
+  run?: (sink: Sink<T>, scheduler: Scheduler) => any
   dispose?: () => any
 }
 
@@ -12,7 +12,7 @@ export class FakeSource<T> implements Source<T> {
     return new FakeSource<T>(assertions)
   }
 
-  run (sink: Sink<T>, scheduler: Scheduler<any>) {
+  run (sink: Sink<T>, scheduler: Scheduler) {
     if (this.assertions && typeof this.assertions.run === 'function')
       this.assertions.run(sink, scheduler)
 
