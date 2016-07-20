@@ -11,7 +11,7 @@
     "validate-commit-msg": "^2.6.1"
   },
   "scripts": {
-    "start": "lerna bootstrap",
+    "start": "npm install && lerna bootstrap",
     "lint": "lerna run lint",
     "build": "lerna run build",
     "test": "lerna run test",
