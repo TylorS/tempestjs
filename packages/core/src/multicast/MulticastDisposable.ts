@@ -6,9 +6,9 @@ import { MulticastTask } from './MulticastTask'
 export class MulticastDisposable<T> implements Disposable<T> {
   private source: Multicast<T>
   private sink: Sink<T>
-  private scheduler: Scheduler<any>
+  private scheduler: Scheduler
   private disposed: boolean
-  constructor (source: Multicast<T>, sink: Sink<T>, scheduler: Scheduler<any>) {
+  constructor (source: Multicast<T>, sink: Sink<T>, scheduler: Scheduler) {
     this.source = source
     this.sink = sink
     this.scheduler = scheduler

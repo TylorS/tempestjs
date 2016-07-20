@@ -19,7 +19,7 @@ export class Multicast<T> implements Source<T>, Sink<T> {
     this._stopId = NONE
   }
 
-    public run (sink: Sink<T>, scheduler: Scheduler<any>) {
+    public run (sink: Sink<T>, scheduler: Scheduler) {
     const n = this._add(sink)
 
     if (n === 1) {
