@@ -14,8 +14,12 @@
     "start": "lerna bootstrap",
     "lint": "lerna run lint",
     "build": "lerna run build",
-    "test": "lerna run test"
-  },
+    "test": "lerna run test",
+    "commit": "git cz",
+    "release:pre": "lerna-semantic-release pre",
+    "release:perform": "lerna-semantic-release perform",
+    "release:post": "lerna-semantic-release post"
+ },
   "config": {
     "commitizen": {
       "path": "./node_modules/cz-lerna-changelog"
