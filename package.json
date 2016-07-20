@@ -18,7 +18,7 @@
     "commit": "git cz",
     "release:pre": "lerna-semantic-release pre",
     "release:perform": "lerna-semantic-release perform",
-    "release:post": "npm run build && lerna-semantic-release post",
+    "release:post": "npm run build && git add . && git commit -m 'chore(release): build dist/' && lerna-semantic-release post",
     "release": "npm run release:pre && npm run release:perform && npm run release:post"
  },
   "config": {
