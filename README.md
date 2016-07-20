@@ -95,3 +95,11 @@ Seriously all that I can ask is make your additions/fixes and use `npm run commi
 instead of using `git commit` this gives us awesome commit messages that allow 
 the generation of changelogs and for me to use semantic release to manage many 
 small packages.
+
+## Snazzy Badges for things
+
+| Package | Version | Dependencies | DevDependencies |
+|---------|---------|--------------|-----------------|
+| monorepo | :fire: | Has none :) | [![devDependency Status](https://david-dm.org/tylors/tempest/dev-status.svg)](https://david-dm.org/tylors/tempest#info=devDependencies) |
+| @tempest/core | [![npm (scoped)](https://img.shields.io/npm/v/@tempest/core.svg?maxAge=2592000)]() | [![Dependency Status](https://david-dm.org/tylors/tempest.svg?path=packages/core)](https://david-dm.org/tylors/tempest?path=packages/core) | [![devDependency Status](https://david-dm.org/tylors/tempest/dev-status.svg?path=packages/core)](https://david-dm.org/tylors/tempest?path=packages/core#info=devDependencies) |
+| @tempest/map | [![npm (scoped)](https://img.shields.io/npm/v/@tempest/map.svg?maxAge=2592000)]() | [![Dependency Status](https://david-dm.org/tylors/tempest.svg?path=packages/map)](https://david-dm.org/tylors/tempest?path=packages/map) | [![devDependency Status](https://david-dm.org/tylors/tempest/dev-status.svg?path=packages/map)](https://david-dm.org/tylors/tempest?path=packages/map#info=devDependencies) |
