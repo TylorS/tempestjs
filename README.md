@@ -41,52 +41,37 @@ So I've been a contributor to [most.js](https://github.com/cujojs/most) for a
 good amount of time, and I find it to be extremely well architected, as well as 
 incredibly fast. If you take a look at the internals of most, and the internals 
 of Tempest, you'll find them stunningly similar. So similar in fact, that it 
-should be 100% compatible with most. This should actually work
+should be 100% compatible with most. See: http://www.webpackbin.com/VkwyeWuwW 
 
-```js
-import { iterate } from 'most'
-import { map } from '@tempest/map'
-
-const stream = map(x => x * 2, iterate(x => x + 1, 0))
-```
-
-This is totally on purpose. When most is rewritten to ES2015 in 
+This is totally on purpose. When most is rewritten to ES2015 in
 the future, I'll actually be cutting out a whoooole lot of code here from 
 Tempest by leveraging tree-shaking to extract the parts of most that I'm 
 basically just copying from javascript to typescript.
 
 For those wondering, UnicastStream here in Tempest, is actually just a most.js
-Stream! And in the future operators may simply be something like 
-
-```js
-// @tempest/map of the future
-import { multicast, map } from 'most'
-export const map = (f, stream) => multicast(map(f, stream))
-```
-
-The only reason it's not so right now is because of the desire to keep things 
-nice and small. Importing just Stream from most right now will still bring in 100%
-of the library.
+Stream! The only reason it's not using most directly right now is because of 
+the desire to keep things nice and small. Importing just Stream from most right 
+now will still bring in 100% of the library.
 
 ##### Okay, so enough back story, really why this thing? 
 
 Let me list my requirements I had when writing this thing 
 
-- [x] most.js architecture - blazing-fast, maintainable, and compatibility.
-- [x] xstream semantics - asynchronous stop, smart Cycle-related defaults, multicast by default
-- [x] xstream operator names - fold, drop, etc
-- [x] functional API - `map(f, stream)` instead of only `stream.map(f)` 
-- [x] Cold/Unicast Streams are possible, but not default - XStream has *only* multicast streams, most defaults to unicast
-- [x] super super modular - pick and choose *only* what you need
-- [x] tree-shaking compatible
-- [x] no shame! - e.g. `stream.shamefullySendNext()` from xstream
-- [x] TypeScript - Seriously, use it.
-- [x] ES Draft Observable interop
+-  most.js architecture - blazing-fast, maintainable, and compatibility.
+-  xstream semantics - asynchronous stop, smart Cycle-related defaults, multicast by default
+-  xstream operator names - fold, drop, etc
+-  functional API - `map(f, stream)` instead of only `stream.map(f)` 
+-  Cold/Unicast Streams are possible, but not default - XStream has *only* multicast streams, most defaults to unicast
+-  super super modular - pick and choose *only* what you need
+-  tree-shaking compatible
+-  no shame! - e.g. `stream.shamefullySendNext()` from xstream
+-  TypeScript - Seriously, use it.
+-  ES Draft Observable interop
 
 List of things I've kept in mind, but haven't implemented yet
 
-- [ ] Helpful error messages - think Elm compiler type helpful
-- [ ] Seriously debuggable - More on this in the future
+-  Helpful error messages - think Elm compiler type helpful
+-  Seriously debuggable - More on this in the future
 
 Basically, I wanted to find a no compromise way to write the applications I need 
 while also trying to be developer friendly and ergonomical. 
