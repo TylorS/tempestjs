@@ -1,6 +1,6 @@
 {
   "name": "@tempest/map",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "Map operator for tempest",
   "main": "dist/tempest-map.js",
   "scripts": {
@@ -12,7 +12,7 @@
     "build:umd": "rollup -c",
     "build:minify": "uglifyjs dist/tempest-map.js -o dist/tempest-map.min.js",
     "build": "npm run build:es2015 && npm run build:umd && npm run build:minify",
-    "prebuild": "rimraf lib dist && mkdirp dist lib && typings install" 
+    "prebuild": "rimraf lib dist && mkdirp dist lib && typings install"
   },
   "repository": {
     "type": "git",

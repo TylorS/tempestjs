@@ -18,8 +18,8 @@
     "commit": "git cz",
     "release:pre": "lerna-semantic-release pre",
     "release:perform": "lerna-semantic-release perform",
-    "release:post": "lerna-semantic-release post",
-    "release": "npm run build && git commit -m 'chore(release): compile sources'"
+    "release:post": "npm run build && lerna-semantic-release post",
+    "release": "npm run release:pre && npm run release:perform && npm run release:post"
  },
   "config": {
     "commitizen": {
