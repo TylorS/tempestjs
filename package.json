@@ -3,11 +3,25 @@
   "version": "0.0.0",
   "description": "This is a monorepo for the Tempest stream library",
   "devDependencies": {
-    "lerna": "2.0.0-beta.24"
+    "commitizen": "^2.8.2",
+    "cz-lerna-changelog": "^0.2.3",
+    "ghooks": "^1.3.2",
+    "lerna": "^2.0.0-beta.24",
+    "lerna-semantic-release": "^4.0.2",
+    "validate-commit-msg": "^2.6.1"
   },
   "scripts": {
+    "start": "lerna bootstrap",
     "lint": "lerna run lint",
     "build": "lerna run build",
     "test": "lerna run test"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-lerna-changelog"
+    },
+    "ghooks": {
+      "commit-msg": "node ./node_modules/.bin/validate-commit-msg"
+    }
   }
 }
