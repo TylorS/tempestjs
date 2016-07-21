@@ -4,6 +4,7 @@ const fs = require('fs')
 
 // package requires
 const mkdirp = require('mkdirp')
+const rimraf = require('rimraf')
 const symlink = require('symlink-or-copy').sync
 
 // constants
@@ -41,15 +42,26 @@ PACKAGES.forEach(package => {
       // the directory we'd like to symlink
       const TARGET = join(TEMPEST_NODEMODULE_DIR, DEP_NAME)
 
-      // only symlink if it doesn't already exist
-      try {
-        if (isSymbolicLink(TARGET) || isDirectory(TARGET)) {
-          console.log(`  - symlink to ${dependency} already exists!`)
-        }
-      } catch (e) {
+      function makeLink (err) {
+        if (err) throw err
         console.log(`  - symlinking to ${dependency}`)
         const PACKAGE_TO_SYMLINK = join(PACKAGE_DIR, DEP_NAME) 
         symlink(PACKAGE_TO_SYMLINK, TARGET, 'dir')
+      }
+
+      // only symlink if it doesn't already exist
+      try {
+        // if directory exists and is already symlinked
+        if (isSymbolicLink(TARGET)) {
+          console.log(`  - symlink to ${dependency} already exists!`)
+        }
+      } catch (e) {
+        // directory already exists but is not our symlink
+        if (isDirectory(TARGET)) {
+          rimraf(TARGET, fs, makeLink)
+        } else { // directory doens't exist and needs symlinking
+          makeLink() 
+        }
       }
     }
   }
