@@ -12,7 +12,7 @@ export class Map<T, R> implements Source<R> {
     this.source = source
   }
 
-  run (sink: Sink<R>, scheduler: Scheduler<any>) {
+  run (sink: Sink<R>, scheduler: Scheduler) {
     return this.source.run(new MapSink<T, R>(this.f, sink), scheduler) as any as Disposable<R>
  }
 }
