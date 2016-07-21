@@ -1,0 +1,4 @@
+dir: packages
+branches:
+  - master
+  - doc-generation
