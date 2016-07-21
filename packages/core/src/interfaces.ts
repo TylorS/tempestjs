@@ -6,7 +6,7 @@ export interface Subscribable<T> {
 }
 
 export interface Source<T> {
-  run (sink: Sink<T>, scheduler: Scheduler<any>): Disposable<T>
+  run (sink: Sink<T>, scheduler: Scheduler): Disposable<T>
 }
 
 export interface Sink<T> {
@@ -15,14 +15,14 @@ export interface Sink<T> {
   error (time: number, err: Error): void
 }
 
-export interface Scheduler<T> {
+export interface Scheduler {
   now(): number
-  asap(task: Task): T
-  delay(delayTime: number, task: Task): T
-  periodic(period: number, task: Task): T
-  schedule(delay: number, period: number, task: Task): T
-  cancel(task: T): void
-  cancelAll(predicate: (task: T) => boolean): void
+  asap(task: Task): ScheduledTask
+  delay(delayTime: number, task: Task): ScheduledTask
+  periodic(period: number, task: Task): ScheduledTask
+  schedule(delay: number, period: number, task: Task): ScheduledTask
+  cancel(task: ScheduledTask): void
+  cancelAll(predicate: (task: ScheduledTask) => boolean): void
 }
 
 export interface Timeline<T> {

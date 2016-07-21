@@ -25,7 +25,7 @@ describe('Stream', () => {
 
   it('should be a Subscribable', (done) => {
     const fakeSource = FakeSource.create<number>({
-      run (sink: Sink<number>, scheduler: Scheduler<any>) {
+      run (sink: Sink<number>, scheduler: Scheduler) {
         sink.event(scheduler.now(), 1)
         sink.end(scheduler.now(), 1)
       }

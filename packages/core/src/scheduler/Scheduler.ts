@@ -3,7 +3,7 @@ import { Asap } from './ClockTimer'
 import { PredeterminedTask } from './PredeterminedTask'
 import { runScheduledTask } from '../util/task'
 
-export class TaskScheduler implements Scheduler<PredeterminedTask> {
+export class TaskScheduler implements Scheduler {
   private timer: Timer<Asap | number>
   private timeline: Timeline<PredeterminedTask>
 

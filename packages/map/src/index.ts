@@ -1,6 +1,6 @@
 import { Stream, Source, Sink, Scheduler, Disposable, getSource } from '@tempest/core'
 
-export function map<T, R> (f: (t: T) => R, stream: Stream<T>): Stream<R>{
+export function map<T, R> (f: (t: T) => R, stream: Stream<T>): Stream<R> {
   return new Stream<R>(new Map<T, R>(f, getSource(stream)))
 }
 

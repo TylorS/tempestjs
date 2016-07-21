@@ -5,13 +5,13 @@ export function withDefaultScheduler<T> (f: (x: T) => any, source: Source<T>) {
   return withScheduler<T>(f, source, defaultScheduler)
 }
 
-export function withScheduler<T> (f: (x: T) => any, source: Source<T>, scheduler: Scheduler<any>): Promise<T> {
+export function withScheduler<T> (f: (x: T) => any, source: Source<T>, scheduler: Scheduler): Promise<T> {
   return new Promise<T>((resolve, reject) => {
     runSource<T>(f, source, scheduler, resolve, reject)
   })
 }
 
-export function runSource<T> (f: (x: T) => any, source: Source<T>, scheduler: Scheduler<any>,
+export function runSource<T> (f: (x: T) => any, source: Source<T>, scheduler: Scheduler,
                               end: (x?: T) => any, error: (e: Error) => any) {
   const disposable = new SettableDisposable<T>()
   const observer = new Drain<T>(f, end, error, disposable)

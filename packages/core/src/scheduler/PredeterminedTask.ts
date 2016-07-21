@@ -4,9 +4,9 @@ export class PredeterminedTask implements ScheduledTask {
   public task: Task
   public time: number
   public period: number
-  private scheduler: Scheduler<PredeterminedTask>
+  private scheduler: Scheduler
   public active: boolean
-  constructor (delay: number, period: number, task: Task, scheduler: Scheduler<PredeterminedTask>) {
+  constructor (delay: number, period: number, task: Task, scheduler: Scheduler) {
     this.time = delay
     this.period = period
     this.task = task
