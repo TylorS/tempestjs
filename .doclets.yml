@@ -1,4 +1,4 @@
-dir: packages
+dir: packages/core/src
 branches:
   - master
   - doc-generation
