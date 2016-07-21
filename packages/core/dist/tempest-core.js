@@ -218,39 +218,6 @@
 	    }
 	}
 
-	var Memory = (function (Multicast) {
-	    function Memory(source) {
-	        Multicast.call(this, source);
-	        this.value = void 0;
-	        this.time = -Infinity;
-	        this.has = false;
-	    }
-
-	    if ( Multicast ) Memory.__proto__ = Multicast;
-	    Memory.prototype = Object.create( Multicast && Multicast.prototype );
-	    Memory.prototype.constructor = Memory;
-	    Memory.prototype._dispose = function _dispose () {
-	        Multicast.prototype._dispose.call(this);
-	        this.has = false;
-	        this.value = void 0;
-	        this.time = -Infinity;
-	    };
-	    Memory.prototype._add = function _add (sink) {
-	        if (this.has) {
-	            sink.event(this.time, this.value);
-	        }
-	        return Multicast.prototype._add.call(this, sink);
-	    };
-	    Memory.prototype.event = function event (time, value) {
-	        this.has = true;
-	        this.time = time;
-	        this.value = value;
-	        Multicast.prototype.event.call(this, time, value);
-	    };
-
-	    return Memory;
-	}(Multicast));
-
 	var PredeterminedTask = function PredeterminedTask(delay, period, task, scheduler) {
 	    this.time = delay;
 	    this.period = period;
@@ -506,6 +473,42 @@
 
 	var defaultScheduler = new TaskScheduler(new ClockTimer(), new BinaryTimeline());
 
+	var BasicSubscription = function BasicSubscription(source, sink) {
+	    this.source = source;
+	    this.sink = sink;
+	    this.disposable = source.run(sink, defaultScheduler);
+	};
+	BasicSubscription.create = function create (source, sink) {
+	    return new BasicSubscription(source, sink);
+	};
+	BasicSubscription.prototype.unsubscribe = function unsubscribe () {
+	    this.disposable.dispose();
+	};
+
+	var SubscriberSink = function SubscriberSink(_next, _error, _complete) {
+	    this._next = _next;
+	    this._error = _error;
+	    this._complete = _complete;
+	};
+	SubscriberSink.create = function create (next, error, complete) {
+	    return new SubscriberSink(next, error, complete);
+	};
+	SubscriberSink.prototype.event = function event (t, x) {
+	    var ref = this;
+	        var _next = ref._next;
+	    _next(x);
+	};
+	SubscriberSink.prototype.error = function error (t, e) {
+	    var ref = this;
+	        var _error = ref._error;
+	    _error(e);
+	};
+	SubscriberSink.prototype.end = function end (t, x) {
+	    var ref = this;
+	        var _complete = ref._complete;
+	    _complete(x);
+	};
+
 	function fatalError(err) {
 	    setTimeout(function () { throw err; }, 0);
 	}
@@ -549,32 +552,52 @@
 	    sink.end(time, value);
 	}
 
-	function getSource(stream) {
-	    return stream.source instanceof Multicast
-	        ? stream.source.source
-	        : stream.source;
-	}
-	var UnicastStream = function UnicastStream(source) {
-	    this.source = source;
+	var FromArraySource = function FromArraySource(array) {
+	    this.array = array;
 	};
-	UnicastStream.from = function from (input) {
+	FromArraySource.prototype.run = function run (sink, scheduler) {
+	    var task = scheduler.asap(new PropagateTask(runArrayTask(this.array, scheduler), void 0, sink));
+	    return { dispose: function () { return task.dispose(); } };
+	};
+	function runArrayTask(array, scheduler) {
+	    return function arrayTask(time, value, sink) {
+	        array.forEach(function (x) { return sink.event(scheduler.now(), x); });
+	        sink.end(scheduler.now(), void 0);
+	    };
+	}
+
+	var FromObservableSource = function FromObservableSource(observable) {
+	    this.observable = observable;
+	};
+	FromObservableSource.prototype.run = function run (sink, scheduler) {
+	    var next = function (x) { return sink.event(scheduler.now(), x); };
+	    var error = function (e) { return sink.error(scheduler.now(), e); };
+	    var complete = function (x) { return sink.end(scheduler.now(), x); };
+	    var subscription = this.observable.subscribe({ next: next, error: error, complete: complete });
+	    return { dispose: function () { return subscription.unsubscribe(); } };
+	};
+
+	var Stream = function Stream(source) {
+	    this.source = new Multicast(source);
+	};
+	Stream.from = function from (input) {
 	    if (typeof input[result] === 'function') {
-	        return new UnicastStream(new FromObservableSource(input));
+	        return new Stream(new FromObservableSource(input));
 	    }
 	    else if (isArrayLike(input)) {
-	        return new UnicastStream(new FromArraySource(input));
+	        return new Stream(new FromArraySource(input));
 	    }
 	    else {
-	        throw new Error('UnicastStream can only be made from an Observable or ArrayLike object');
+	        throw new Error('Stream can only be made from an Observable or ArrayLike object');
 	    }
 	};
-	UnicastStream.of = function of () {
+	Stream.of = function of () {
 	        var items = [], len = arguments.length;
 	        while ( len-- ) items[ len ] = arguments[ len ];
 
-	    return UnicastStream.from(items);
+	    return Stream.from(items);
 	};
-	UnicastStream.prototype.subscribe = function subscribe (nextOrSubscriber, error, complete) {
+	Stream.prototype.subscribe = function subscribe (nextOrSubscriber, error, complete) {
 	    var _next = Function.prototype;
 	    var _error = Function.prototype;
 	    var _complete = Function.prototype;
@@ -597,121 +620,10 @@
 	        if (complete && typeof complete === 'function')
 	            _complete = complete;
 	    }
-	    return new BasicSubscription(this.source, _next, _error, _complete);
+	    return BasicSubscription.create(this.source, SubscriberSink.create(_next, _error, _complete));
 	};
-	UnicastStream.prototype[result] = function () {
+	Stream.prototype[result] = function () {
 	    return this;
-	};
-	UnicastStream.prototype.share = function share () {
-	    return new Stream(this.source);
-	};
-	UnicastStream.prototype.remember = function remember () {
-	    return new MemoryStream(getSource(this));
-	};
-	var Stream = (function (UnicastStream) {
-	    function Stream(source) {
-	        UnicastStream.call(this, new Multicast(source));
-	    }
-
-	    if ( UnicastStream ) Stream.__proto__ = UnicastStream;
-	    Stream.prototype = Object.create( UnicastStream && UnicastStream.prototype );
-	    Stream.prototype.constructor = Stream;
-	    Stream.from = function from (input) {
-	        if (typeof input[result] === 'function') {
-	            return new Stream(new FromObservableSource(input));
-	        }
-	        else if (isArrayLike(input)) {
-	            return new Stream(new FromArraySource(input));
-	        }
-	        else {
-	            throw new Error('Stream can only be made from an Observable or ArrayLike object');
-	        }
-	    };
-	    Stream.of = function of () {
-	        var items = [], len = arguments.length;
-	        while ( len-- ) items[ len ] = arguments[ len ];
-
-	        return Stream.from(items);
-	    };
-	    Stream.prototype.share = function share () {
-	        return this;
-	    };
-	    Stream.prototype.unshare = function unshare () {
-	        return new UnicastStream(getSource(this));
-	    };
-
-	    return Stream;
-	}(UnicastStream));
-	var MemoryStream = (function (UnicastStream) {
-	    function MemoryStream(source) {
-	        UnicastStream.call(this, new Memory(source));
-	    }
-
-	    if ( UnicastStream ) MemoryStream.__proto__ = UnicastStream;
-	    MemoryStream.prototype = Object.create( UnicastStream && UnicastStream.prototype );
-	    MemoryStream.prototype.constructor = MemoryStream;
-	    MemoryStream.from = function from (input) {
-	        if (typeof input[result] === 'function') {
-	            return new MemoryStream(new FromObservableSource(input));
-	        }
-	        else if (isArrayLike(input)) {
-	            return new MemoryStream(new FromArraySource(input));
-	        }
-	        else {
-	            throw new Error('MemoryStream can only be made from an Observable or ArrayLike object');
-	        }
-	    };
-	    MemoryStream.of = function of () {
-	        var items = [], len = arguments.length;
-	        while ( len-- ) items[ len ] = arguments[ len ];
-
-	        return MemoryStream.from(items);
-	    };
-	    MemoryStream.prototype.share = function share () {
-	        return this;
-	    };
-	    MemoryStream.prototype.remember = function remember () {
-	        return this;
-	    };
-
-	    return MemoryStream;
-	}(UnicastStream));
-	var BasicSubscription = function BasicSubscription(source, _next, _error, _complete) {
-	    this.source = source;
-	    this._next = _next;
-	    this._error = _error;
-	    this._complete = _complete;
-	    this.disposable = source.run({
-	        event: function event(time, x) { _next(x); },
-	        error: function error(time, err) { _error(err); },
-	        end: function end(time, x) { _complete(x); }
-	    }, defaultScheduler);
-	};
-	BasicSubscription.prototype.unsubscribe = function unsubscribe () {
-	    this.disposable.dispose();
-	};
-	var FromArraySource = function FromArraySource(array) {
-	    this.array = array;
-	};
-	FromArraySource.prototype.run = function run (sink, scheduler) {
-	    var task = scheduler.asap(new PropagateTask(runArrayTask(this.array, scheduler), void 0, sink));
-	    return { dispose: function () { return task.dispose(); } };
-	};
-	function runArrayTask(array, scheduler) {
-	    return function arrayTask(time, value, sink) {
-	        array.forEach(function (x) { return sink.event(scheduler.now(), x); });
-	        sink.end(scheduler.now(), void 0);
-	    };
-	}
-	var FromObservableSource = function FromObservableSource(observable) {
-	    this.observable = observable;
-	};
-	FromObservableSource.prototype.run = function run (sink, scheduler) {
-	    var next = function (x) { return sink.event(scheduler.now(), x); };
-	    var error = function (e) { return sink.error(scheduler.now(), e); };
-	    var complete = function (x) { return sink.end(scheduler.now(), x); };
-	    var subscription = this.observable.subscribe({ next: next, error: error, complete: complete });
-	    return { dispose: function () { return subscription.unsubscribe(); } };
 	};
 
 	function withDefaultScheduler(f, source) {
@@ -784,14 +696,21 @@
 	    }, error);
 	}
 
-	exports.UnicastStream = UnicastStream;
+	function getSource(stream) {
+	    return stream.source instanceof Multicast
+	        ? stream.source.source
+	        : stream.source;
+	}
+
 	exports.Stream = Stream;
-	exports.MemoryStream = MemoryStream;
-	exports.getSource = getSource;
 	exports.defaultScheduler = defaultScheduler;
+	exports.PropagateTask = PropagateTask;
 	exports.runSource = runSource;
 	exports.withScheduler = withScheduler;
 	exports.withDefaultScheduler = withDefaultScheduler;
+	exports.getSource = getSource;
+	exports.BasicSubscription = BasicSubscription;
+	exports.SubscriberSink = SubscriberSink;
 
 	Object.defineProperty(exports, '__esModule', { value: true });
 
