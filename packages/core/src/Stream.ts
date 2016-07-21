@@ -11,12 +11,38 @@ import { SubscriberSink } from './util/SubscriberSink'
 import { FromArraySource } from './source/fromArray'
 import { FromObservableSource } from './source/fromObservable'
 
+/**
+ * 
+ * 
+ * @export
+ * @class Stream
+ * @implements {Subscribable<T>}
+ * @template T
+ */
 export class Stream<T> implements Subscribable<T> {
+  /**
+   * 
+   * 
+   * @type {Multicast<T>}
+   */
   public source: Multicast<T>
+  /**
+   * Creates an instance of Stream.
+   * 
+   * @param {Source<T>} source
+   */
   constructor (source: Source<T>) {
     this.source = new Multicast<T>(source)
   }
 
+  /**
+   * 
+   * 
+   * @static
+   * @template T
+   * @param {(Subscribable<T> | ArrayLike<T>)} input
+   * @returns {Stream<T>}
+   */
   static from<T> (input: Subscribable<T> | ArrayLike<T>): Stream<T> {
     if (typeof input[$$observable] === 'function') {
       return new Stream<T>(new FromObservableSource(input as Subscribable<T>))
@@ -27,10 +53,26 @@ export class Stream<T> implements Subscribable<T> {
     }
   }
 
+  /**
+   * 
+   * 
+   * @static
+   * @template T
+   * @param {...T[]} items
+   * @returns {Stream<T>}
+   */
   static of<T> (...items: T[]): Stream<T> {
     return Stream.from<T>(items)
   }
 
+  /**
+   * 
+   * 
+   * @param {((x: T) => any | Subscriber<T>)} [nextOrSubscriber]
+   * @param {(e: Error) => any} [error]
+   * @param {(x?: T) => any} [complete]
+   * @returns {Subscription<T>}
+   */
   subscribe (nextOrSubscriber?: (x: T) => any | Subscriber<T>,
              error?: (e: Error) => any,
              complete?: (x?: T) => any): Subscription<T> {
@@ -53,6 +95,11 @@ export class Stream<T> implements Subscribable<T> {
     return BasicSubscription.create<T>(this.source, SubscriberSink.create<T>(_next, _error, _complete))
   }
 
+  /**
+   * 
+   * 
+   * @returns
+   */
   [$$observable] () {
     return this
   }
