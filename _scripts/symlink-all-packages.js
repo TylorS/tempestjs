@@ -52,15 +52,20 @@ PACKAGES.forEach(package => {
       // only symlink if it doesn't already exist
       try {
         // if directory exists and is already symlinked
+        // throws if TARGET does not exist
         if (isSymbolicLink(TARGET)) {
           console.log(`  - symlink to ${dependency} already exists!`)
         }
       } catch (e) {
         // directory already exists but is not our symlink
-        if (isDirectory(TARGET)) {
-          rimraf(TARGET, fs, makeLink)
-        } else { // directory doens't exist and needs symlinking
-          makeLink() 
+        try {
+          // if directory exists and is not already symlinked
+          // throws if TARGET does not exist
+          if (isDirectory(TARGET)) {
+            rimraf(TARGET, fs, makeLink)
+          }
+        } catch (e) {
+          makeLink()
         }
       }
     }
