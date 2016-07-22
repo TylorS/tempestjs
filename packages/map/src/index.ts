@@ -4,6 +4,10 @@ export function map<T, R> (f: (t: T) => R, stream: Stream<T>): Stream<R> {
   return new Stream<R>(new Map<T, R>(f, getSource(stream)))
 }
 
+export function mapTo<T, R>(value: R, stream: Stream<T>): Stream<R> {
+  return map<T, R>(() => value, stream)
+}
+
 export class Map<T, R> implements Source<R> {
   public f: (t: T) => R
   public source: Source<T>
