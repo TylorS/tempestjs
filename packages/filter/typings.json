@@ -1,5 +1,5 @@
 {
-  "name": "@tempest/filter",
+  "name": "@tempest/take",
   "globalDevDependencies": {
     "empower": "registry:dt/empower#0.0.0+20160317120654",
     "mocha": "registry:dt/mocha#2.2.5+20160619032855",
