@@ -17,7 +17,7 @@
   "scripts": {
     "clean": "lerna clean --yes && rimraf packages/**/*.log packages/**/*.log.* && rimraf *.log && rimraf node_modules",
     "scripts:symlink": "node _scripts/symlink-all-packages.js",
-    "postinstall": "npm run scripts:symlink && lerna exec -- npm install",
+    "postinstall": "lerna exec -- npm install && npm run scripts:symlink",
     "lint": "lerna run lint",
     "build": "lerna run build",
     "test": "lerna run test",
