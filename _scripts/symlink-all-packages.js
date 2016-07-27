@@ -34,21 +34,20 @@ PACKAGES.forEach(package => {
       // get the 'foo' from @tempest/foo
       const DEP_NAME = strip(dependency)
 
-      // make node_modules/@tempest dir
-      makeDir(TEMPEST_NODEMODULE_DIR)
-
-      // the directory we'd like to symlink
-      const TARGET = join(TEMPEST_NODEMODULE_DIR, DEP_NAME)
-
-      function makeLink (err) {
+      mkdirp(TEMPEST_NODEMODULE_DIR, (err) => {
         if (err) throw err
-        console.log(`  - symlinking to ${dependency} in ${package}`)
-        const PACKAGE_TO_SYMLINK = join(PACKAGE_DIR, DEP_NAME) 
-        symlink(PACKAGE_TO_SYMLINK, TARGET, 'dir')
-      }
 
-      // delete TARGET and make the symlink
-      rimraf(TARGET, fs, makeLink)
+        // the directory we'd like to symlink
+        const TARGET = join(TEMPEST_NODEMODULE_DIR, DEP_NAME)
+        const PACKAGE_TO_SYMLINK = join(PACKAGE_DIR, DEP_NAME)
+
+        // delete TARGET and make the symlink
+        rimraf(TARGET, fs, (err) => {
+          if (err) throw err
+          console.log(`  - symlinking to ${dependency} in ${package}`)
+          symlink(PACKAGE_TO_SYMLINK, TARGET, 'dir')
+        })
+      })
     }
   }
 
