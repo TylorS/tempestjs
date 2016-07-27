@@ -7,7 +7,7 @@ export function last<T> (stream: Stream<T>): Stream<T> {
 export class Last<T> implements Source<T> {
   constructor (private source: Source<T>) {}
 
-  run (sink: Sink<T>, scheduler: Scheduler<T>): Disposable<T> {
+  run (sink: Sink<T>, scheduler: Scheduler): Disposable<T> {
     return this.source.run(new LastSink<T>(sink), scheduler)
   }
 }
