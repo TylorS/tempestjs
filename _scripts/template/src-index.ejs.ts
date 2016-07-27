@@ -7,7 +7,7 @@ export function <%= name %><T> (stream: Stream<T>) {
 export class <%= capitalName %><T> implements Source<T> {
   constructor (private source: Source<T>) {}
 
-  run (sink: Sink<T>, scheduler: Scheduler<T>): Disposable<T> {
+  run (sink: Sink<T>, scheduler: Scheduler): Disposable<T> {
     return this.source.run(new <%= capitalName %>Sink<T>(sink), scheduler)
   }
 }
