@@ -711,6 +711,7 @@
 	exports.getSource = getSource;
 	exports.BasicSubscription = BasicSubscription;
 	exports.SubscriberSink = SubscriberSink;
+	exports.Multicast = Multicast;
 
 	Object.defineProperty(exports, '__esModule', { value: true });
 
