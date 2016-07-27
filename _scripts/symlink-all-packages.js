@@ -25,8 +25,6 @@ PACKAGES.forEach(package => {
   const DEPENDENCIES = Object.keys(PACKAGEJSON.dependencies)
   const DEVDEPENDENCIES = Object.keys(PACKAGEJSON.devDependencies)
 
-  console.log(`> ${package} :`)
-
   // make the node_modules directory if it doesn't exist
   makeDir(NODE_MODULES)
 
@@ -44,30 +42,13 @@ PACKAGES.forEach(package => {
 
       function makeLink (err) {
         if (err) throw err
-        console.log(`  - symlinking to ${dependency}`)
+        console.log(`  - symlinking to ${dependency} in ${package}`)
         const PACKAGE_TO_SYMLINK = join(PACKAGE_DIR, DEP_NAME) 
         symlink(PACKAGE_TO_SYMLINK, TARGET, 'dir')
       }
 
-      // only symlink if it doesn't already exist
-      try {
-        // if directory exists and is already symlinked
-        // throws if TARGET does not exist
-        if (isSymbolicLink(TARGET)) {
-          console.log(`  - symlink to ${dependency} already exists!`)
-        }
-      } catch (e) {
-        // directory already exists but is not our symlink
-        try {
-          // if directory exists and is not already symlinked
-          // throws if TARGET does not exist
-          if (isDirectory(TARGET)) {
-            rimraf(TARGET, fs, makeLink)
-          }
-        } catch (e) {
-          makeLink()
-        }
-      }
+      // delete TARGET and make the symlink
+      rimraf(TARGET, fs, makeLink)
     }
   }
 
