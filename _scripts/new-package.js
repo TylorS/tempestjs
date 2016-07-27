@@ -1,6 +1,8 @@
 // node requires
 const { join } = require('path')
 const fs = require('fs')
+const { chdir } = require('process')
+const { exec } = require('child_process')
 
 // package requires
 const mkdirp = require('mkdirp')
@@ -67,6 +69,23 @@ if (isDirectoryIn(PACKAGE_DIR)(PACKAGE_TO_CREATE)) {
 
       writeFile('test/index.ts', TEST_INDEX_CONTENT)
     })
+
+    setTimeout(() => {
+      exec('npm install', {cwd: PACKAGE_TO_CREATE_DIR}, (err, stdout, stderr) => {
+        if (err) throw err
+        console.log(stdout)
+
+        exec('typings install', {cwd: PACKAGE_TO_CREATE_DIR}, (err, stdout, stderr) => {
+          if (err) throw err
+          console.log(stdout)
+        })
+
+        exec('npm run scripts:symlink', {cwd: TEMPEST_DIR}, (err, stdout, stderr) => {
+          if (err) throw err
+          console.log(stdout)
+        })
+      })
+    }, 100)
   })
 }
 
