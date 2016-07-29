@@ -27,4 +27,45 @@ describe('@tempest/flatten', () => {
       assert(x === expected.shift())
     }, done, () => done())
   })
+
+  it('should continue an inner stream rather than restarting', (done) => {
+    const innerStream = new Stream<number>({
+      run(sink: Sink<number>, scheduler: Scheduler) {
+        let i = -1
+        const interval = setInterval(() => {
+          sink.event(scheduler.now(), ++i)
+        }, 50)
+
+        return {
+          dispose () {
+            clearInterval(interval)
+          }
+        }
+      }
+    })
+
+    const outerStream = new Stream<Stream<number>>({
+      run (sink: Sink<Stream<number>>, scheduler: Scheduler) {
+        sink.event(scheduler.now(), innerStream)
+        const id = setTimeout(() => {
+          sink.event(scheduler.now(), innerStream)
+        }, 110)
+
+        return {
+          dispose () {
+            clearTimeout(id)
+          }
+        }
+      }
+    })
+
+    const expected = [0, 1, 2, 3, 4, 5]
+
+    flatten(outerStream).subscribe((x: number) => {
+      assert(x === expected.shift())
+      if (expected.length === 0) {
+        done()
+      }
+    })
+  })
 })
