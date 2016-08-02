@@ -1,7 +1,7 @@
 {
   "name": "@tempest/periodic",
   "version": "0.0.0",
-  "description": "periodic operator for tempest",
+  "description": "periodic factory for tempest",
   "main": "dist/tempest-periodic.js",
   "scripts": {
     "lint": "tslint -c ../../tslint.json src/*.ts src/**/*.ts",
