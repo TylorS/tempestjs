@@ -13,4 +13,14 @@ describe('@tempest/drop', () => {
       assert(x === expected.shift())
     }, done, () => done())
   })
+
+  it ('should be curried', (done) => {
+    const dropOne = drop(1)
+    const stream = dropOne(Stream.of(1, 2, 3))
+    const expected = [2, 3]
+
+    stream.subscribe((x: number) => {
+      assert(x === expected.shift())
+    }, done, () => done())
+  })
 })
