@@ -1,6 +1,6 @@
 {
   "name": "@tempest/subject",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "subject operator for tempest",
   "main": "dist/tempest-subject.js",
   "scripts": {
