@@ -1,6 +1,6 @@
 {
   "name": "@tempest/merge",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "merge operator for tempest",
   "main": "dist/tempest-merge.js",
   "scripts": {
