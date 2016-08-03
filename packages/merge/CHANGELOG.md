@@ -1,11 +1,12 @@
-<a name="1.1.1"></a>
-## 1.1.1 (2016-08-03)
+<a name="1.1.2"></a>
+## 1.1.2 (2016-08-03)
 
 
 ### Bug Fixes
 
 * **merge:** use local getSource instead of one from core ([7b62d94](https://github.com/TylorS/tempest/commit/7b62d94))
 * **meta:** update dependencies to latest version of core ([b6c03b1](https://github.com/TylorS/tempest/commit/b6c03b1))
+* **package:** add jsnext:main and typings field to package.json ([3cbbc88](https://github.com/TylorS/tempest/commit/3cbbc88))
 
 
 ### Features
