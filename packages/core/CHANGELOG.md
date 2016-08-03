@@ -7,6 +7,7 @@
 * **core:** better typings for curry ([394eaaf](https://github.com/TylorS/tempest/commit/394eaaf))
 * **core:** export externally used classes ([17d98a0](https://github.com/TylorS/tempest/commit/17d98a0))
 * **core:** fix IndexSink ([2dbc6ee](https://github.com/TylorS/tempest/commit/2dbc6ee))
+* **map:** mapTo was defined twice ([41a18bd](https://github.com/TylorS/tempest/commit/41a18bd))
 * **package:** add jsnext:main and typings field to package.json ([3cbbc88](https://github.com/TylorS/tempest/commit/3cbbc88))
 
 

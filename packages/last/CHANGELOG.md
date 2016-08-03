@@ -5,6 +5,7 @@
 ### Bug Fixes
 
 * **last:** scheduler is not a generic ([c3f585a](https://github.com/TylorS/tempest/commit/c3f585a))
+* **map:** mapTo was defined twice ([41a18bd](https://github.com/TylorS/tempest/commit/41a18bd))
 * **meta:** update dependencies to latest version of core ([b6c03b1](https://github.com/TylorS/tempest/commit/b6c03b1))
 * **package:** add jsnext:main and typings field to package.json ([3cbbc88](https://github.com/TylorS/tempest/commit/3cbbc88))
 
