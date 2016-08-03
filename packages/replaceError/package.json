@@ -1,6 +1,6 @@
 {
   "name": "@tempest/replaceError",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "replaceError operator for tempest",
   "main": "dist/tempest-replaceError.js",
   "jsnext:main": "lib/index.js",
