@@ -26,13 +26,15 @@ export interface ThreeMore<T1, T2, T3, R> {
  * @returns {OneMore<A, B>}
  */
 export function curry1<A, B> (f: (a: A) => B): OneMore<A, B> {
-  function curried (a: A) {
+  function curried (a: A): OneMore<A, B> | B {
     switch (arguments.length) {
-      case 0: return curried
-      case 1: return f(a)
-      default: return curried
+      case 0: return curried as OneMore<A, B>
+      case 1: return f(a) as B
+      default: return curried as OneMore<A, B>
     }
   }
+
+  return curried as OneMore<A, B>
 }
 
 /**
@@ -46,16 +48,16 @@ export function curry1<A, B> (f: (a: A) => B): OneMore<A, B> {
  * @returns {TwoMore<A, B, C>}
  */
 export function curry2<A, B, C> (f: (a: A, b: B) => C): TwoMore<A, B, C> {
-  function curried (a?: A, b?: B) {
+  function curried (a?: A, b?: B): TwoMore<A, B, C> | OneMore<B, C> | C {
     switch (arguments.length) {
-      case 0: return curried
-      case 1: return curry1<B, C>((b: B) => f(a, b))
-      case 2: return f(a, b)
-      default: return curried
+      case 0: return curried as TwoMore<A, B, C>
+      case 1: return curry1<B, C>((b: B) => f(a, b)) as OneMore<B, C>
+      case 2: return f(a, b) as C
+      default: return curried as TwoMore<A, B, C>
     }
   }
 
-  return curried
+  return curried as TwoMore<A, B, C>
 }
 
 /**
@@ -70,15 +72,15 @@ export function curry2<A, B, C> (f: (a: A, b: B) => C): TwoMore<A, B, C> {
  * @returns {ThreeMore<A, B, C, D>}
  */
 export function curry3<A, B, C, D> (f: (a: A, b: B, c: C) => D): ThreeMore<A, B, C, D> {
-  function curried (a?: A, b?: B, c?: C) {
-    switch (arguments) {
-      case 0: return curried
-      case 1: return curry2<B, C, D>((b: B, c: C) => f(a, b, c))
-      case 2: return curry1<C, D>((c: C) => f(a, b, c))
-      case 3: return f(a, b, c)
-      default: return curried
+  function curried (a?: A, b?: B, c?: C): ThreeMore<A, B, C, D> | TwoMore<B, C, D> | OneMore<C, D> | D {
+    switch (arguments.length) {
+      case 0: return curried as ThreeMore<A, B, C, D>
+      case 1: return curry2<B, C, D>((b: B, c: C) => f(a, b, c)) as TwoMore<B, C, D>
+      case 2: return curry1<C, D>((c: C) => f(a, b, c)) as OneMore<C, D>
+      case 3: return f(a, b, c) as D
+      default: return curried as ThreeMore<A, B, C, D>
     }
   }
 
-  return curried
+  return curried as ThreeMore<A, B, C, D>
 }
