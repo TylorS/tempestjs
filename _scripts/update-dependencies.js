@@ -11,28 +11,29 @@ const Boxcutter = require('boxcutter')
 // constants
 const TEMPEST_DIR=process.cwd()
 const PACKAGES_DIR=join(TEMPEST_DIR, 'packages')
-const CORE_DIR = join(PACKAGES_DIR, 'core')
-const CORE_VERSION = require(join(CORE_DIR, 'package.json')).version
 const PACKAGES = getDirectories(PACKAGES_DIR)
 const SCRIPT = process.argv[2] 
 
-PACKAGES.filter(package => package !== 'core').forEach(package => {
+PACKAGES.forEach(package => {
   const CURRENT_PACKAGE_DIR = join(PACKAGES_DIR, package)
   const PACKAGEJSON = require(join(CURRENT_PACKAGE_DIR, 'package.json'))
   const DEPENDENCIES = Object.keys(PACKAGEJSON.dependencies)
+  const DEVDEPENDENCIES = Object.keys(PACKAGEJSON.devDependencies)
 
   const boxcutter = Object.assign({}, Boxcutter.Boxcutter)
   boxcutter.load(join(CURRENT_PACKAGE_DIR, 'package.json'))
-
-  console.log(`Updating 'core' dependency to ${CORE_VERSION} in @tempest/${package}...`)
-
   function updateDep (dep) {
     if (isTempestPackage(dep)) {
-      boxcutter.set(`dependencies.${dep}`, `^${CORE_VERSION}`)
+      const DEP_DIR = join(PACKAGES_DIR, strip(dep))
+      const DEP_PACKAGEJSON = require(join(DEP_DIR, 'package.json'))
+      const VERSION = DEP_PACKAGEJSON.version
+      console.log(`Updating dependency on ${dep} to v${VERSION} in ${package}`)
+      boxcutter.set(`dependencies.${dep}`, `^${VERSION}`)
     }
   }
 
   DEPENDENCIES.forEach(updateDep)
+  DEVDEPENDENCIES.forEach(updateDep)
   boxcutter.save(join(CURRENT_PACKAGE_DIR, 'package.json'))
 })
 
