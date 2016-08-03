@@ -22,4 +22,14 @@ describe('@tempest/fold', () => {
       assert(x === expected.shift())
     }, done, () => done())
   })
+
+  it ('should be curried', (done) => {
+    const add = fold<number, number>((x, y) => x + y, 0)
+    const stream = add(Stream.of(1, 1, 1))
+    const expected = [0, 1, 2, 3]
+
+    stream.subscribe((x) => {
+      assert(x === expected.shift())
+    }, done, () => done())
+  })
 })
