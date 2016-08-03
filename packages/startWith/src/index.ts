@@ -1,8 +1,19 @@
 import { Stream, Source, Sink, Disposable, Scheduler } from '@tempest/core'
 import { PropagateTask } from '@tempest/core'
 
-export function startWith<T> (value: T, stream: Stream<T>) {
-  return new Stream<T>(new StartWith<T>(value, stream.source))
+export interface StartWithCurried {
+  <T>(): (value: T, stream: Stream<T>) => Stream<T>
+  <T>(value: T): <T>(stream: Stream<T>) => Stream<T>
+  <T>(value: T, stream: Stream<T>): Stream<T>
+}
+
+export const startWith: StartWithCurried = <StartWithCurried> function <T>(value: T, stream: Stream<T>): Stream<T> |
+  ((stream: Stream<T>) => Stream<T>) | ((value: T, stream: Stream<T>) => Stream<T>) {
+  switch (arguments.length) {
+    case 1: return function (stream: Stream<T>) { return new Stream<T>(new StartWith<T>(value, stream.source)) }
+    case 2: return new Stream<T>(new StartWith<T>(value, stream.source))
+    default: return startWith
+  }
 }
 
 export class StartWith<T> implements Source<T> {
