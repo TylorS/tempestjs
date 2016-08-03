@@ -25,4 +25,26 @@ describe('@tempest/replaceError', () => {
       assert(x === 1)
     }, done, () => done())
   })
+
+  it ('should be curried', (done) => {
+    const errorStream = new Stream<any>({
+      run (sink: Sink<any>, scheduler: Scheduler) {
+        const task = scheduler.asap(PropagateTask.error(new Error('oh no'), sink))
+        return {
+          dispose () {
+            scheduler.cancel(task)
+          }
+        }
+      }
+    })
+
+    const replace = (e: Error) => Stream.of(1)
+
+    const replaceWith = replaceError(replace)
+    const stream = replaceWith(errorStream)
+
+    stream.subscribe((x: number) => {
+      assert(x === 1)
+    }, done, () => done())
+  })
 })
