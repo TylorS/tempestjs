@@ -1,4 +1,4 @@
-import { Stream, Source, Sink, Disposable, Scheduler, getSource, IndexSink, IndexedValue } from '@tempest/core'
+import { Stream, Source, Sink, Disposable, Scheduler, IndexSink, IndexedValue } from '@tempest/core'
 
 export interface CombineInterface {
   <T1>(streams: [Stream<T1>]): Stream<[T1]>
@@ -14,6 +14,10 @@ export interface CombineInterface {
 
 export const combine: CombineInterface = <CombineInterface> function (streams: Stream<any>[]) {
   return new Stream(new Combine(streams.map(getSource)))
+}
+
+function getSource<T> (stream: Stream<T>): Source<T> {
+  return stream.source
 }
 
 export class Combine<T> implements Source<T[]> {
