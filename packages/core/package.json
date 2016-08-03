@@ -1,6 +1,6 @@
 {
   "name": "@tempest/core",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "The core of the Tempest Stream Library",
   "main": "dist/tempest-core.js",
   "jsnext:main": "lib/index.js",
