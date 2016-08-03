@@ -1,6 +1,6 @@
 {
   "name": "@tempest/never",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "never operator for tempest",
   "main": "dist/tempest-never.js",
   "scripts": {
