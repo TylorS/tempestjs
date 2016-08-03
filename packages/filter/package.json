@@ -1,6 +1,6 @@
 {
   "name": "@tempest/filter",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "filter operator for tempest",
   "main": "dist/tempest-filter.js",
   "scripts": {
