@@ -30,10 +30,6 @@ export const mapTo: CurriedMapTo = <CurriedMapTo> function <T, R>(value: R, stre
   }
 }
 
-export function mapTo<T, R>(value: R, stream: Stream<T>): Stream<R> {
-  return map<T, R>(() => value, stream)
-}
-
 export class Map<T, R> implements Source<R> {
   public f: (t: T) => R
   public source: Source<T>
