@@ -1,0 +1,51 @@
+{
+  "name": "@tempest/empty",
+  "version": "0.0.0",
+  "description": "empty factory for tempest",
+  "main": "dist/tempest-empty.js",
+  "scripts": {
+    "lint": "tslint -c ../../tslint.json src/*.ts src/**/*.ts",
+    "unit-test": "mocha --compilers ts:espower-typescript/guess -r ts-node/register test/*.ts test/**/*.ts",
+    "pretest": "typings install",
+    "test": "npm run lint && npm run unit-test",
+    "build:es2015": "../../node_modules/.bin/tsc --moduleResolution node --preserveConstEnums --sourceMap --declaration --noImplicitAny --suppressImplicitAnyIndexErrors --module es2015 --target es6 --outDir lib/ src/index.ts",
+    "build:umd": "rollup -c",
+    "build:minify": "uglifyjs dist/tempest-empty.js -o dist/tempest-empty.min.js",
+    "build": "npm run build:es2015 && npm run build:umd && npm run build:minify",
+    "prebuild": "rimraf lib dist && mkdirp dist lib && typings install"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TylorS/tempest.git"
+  },
+  "keywords": [
+    "tempest",
+    "drop",
+    "stream",
+    "reactive",
+    "cycle.js",
+    "cycle"
+  ],
+  "author": "Tylor Steinberger <tlsteinberger167@gmail.com> (github.com/TylorS)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/TylorS/tempest/issues"
+  },
+  "homepage": "https://github.com/TylorS/tempest#readme",
+  "dependencies": {
+    "@tempest/core": "^0.0.2"
+  },
+  "devDependencies": {
+    "espower-typescript": "^5.0.1",
+    "mkdirp": "^0.5.1",
+    "mocha": "^2.5.3",
+    "power-assert": "^1.4.1",
+    "rimraf": "^2.5.3",
+    "rollup": "^0.34.1",
+    "rollup-plugin-buble": "^0.12.1",
+    "ts-node": "^0.9.3",
+    "tslint": "^3.13.0",
+    "typings": "^1.3.1",
+    "uglify-js": "^2.7.0"
+  }
+}

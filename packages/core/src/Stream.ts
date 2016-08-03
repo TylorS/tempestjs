@@ -31,7 +31,7 @@ export class Stream<T> implements Subscribable<T> {
     return Stream.from<T>(items)
   }
 
-  subscribe (nextOrSubscriber?: (x: T) => any | Subscriber<T>,
+  subscribe (nextOrSubscriber?: Subscriber<T> | ((x: T) => any),
              error?: (e: Error) => any,
              complete?: (x?: T) => any): Subscription<T> {
     let _next = Function.prototype as (x: T) => any
@@ -45,7 +45,7 @@ export class Stream<T> implements Subscribable<T> {
       if (error && typeof error === 'function') _error = error
       if (complete && typeof complete === 'function') _complete = complete
     } else if (typeof nextOrSubscriber === 'function') {
-      _next = nextOrSubscriber
+      _next = nextOrSubscriber as (x: T) => any
       if (error && typeof error === 'function') _error = error
       if (complete && typeof complete === 'function') _complete = complete
     }

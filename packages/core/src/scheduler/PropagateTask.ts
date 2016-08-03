@@ -19,7 +19,7 @@ export class PropagateTask<T> implements Task {
     return new PropagateTask<T>(event, value, sink)
   }
 
-  static error<T> (err: Error, sink: Sink<Error>): PropagateTask<Error> {
+  static error<T> (err: Error, sink: Sink<any>): PropagateTask<Error> {
     return new PropagateTask<Error>(error, err, sink)
   }
 

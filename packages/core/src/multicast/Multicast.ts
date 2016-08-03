@@ -1,6 +1,6 @@
 import { Source, Sink, Scheduler, Disposable, ScheduledTask } from '../interfaces'
 
-import { append, remove, findIndex } from '../util/array'
+import { addSink, removeSink, none } from './sink'
 
 import { MulticastDisposable } from './MulticastDisposable'
 
@@ -10,16 +10,17 @@ const NONE: ScheduledTask = null
 export class Multicast<T> implements Source<T>, Sink<T> {
   public source: Source<T>
   public _stopId: ScheduledTask
-  protected sinks: Sink<T>[];
+  protected sink: Sink<T>;
+  protected activeCount: number = 0
   protected disposable: Disposable<T>
   constructor (source: Source<T>) {
     this.source = source
-    this.sinks = []
+    this.sink = none()
     this.disposable = EMPTY
     this._stopId = NONE
   }
 
-    public run (sink: Sink<T>, scheduler: Scheduler) {
+  public run (sink: Sink<T>, scheduler: Scheduler) {
     const n = this._add(sink)
 
     if (n === 1) {
@@ -43,61 +44,35 @@ export class Multicast<T> implements Source<T>, Sink<T> {
   }
 
   public _add (sink: Sink<T>): number {
-    this.sinks = append(sink, this.sinks)
-    return this.sinks.length
+    this.sink = addSink(sink, this.sink)
+    this.activeCount += 1
+    return this.activeCount
   }
 
   public _remove (sink: Sink<T>): number {
-    const index = findIndex(sink, this.sinks)
+    const s = this.sink
+    this.sink = removeSink(sink, this.sink)
 
-    if (index >= 0) {
-      this.sinks = remove(index, this.sinks)
+    if (s !== this.sink) {
+      this.activeCount -= 1
     }
 
-    return this.sinks.length
+    return this.activeCount
   }
 
   public event (time: number, value: T): void {
-    const s = this.sinks
-    if (s.length === 1) {
-      return s[0].event(time, value)
-    }
-    for (let i = 0; i < s.length; ++i) {
-      tryEvent(time, value, s[i])
-    }
+    this.sink.event(time, value)
   }
 
   public end (time: number, value?: T): void {
-    const s = this.sinks
-    for (let i = 0; i < s.length; ++i) {
-      tryEnd(time, value, s[i])
-    }
+    this.sink.end(time, value)
   }
 
   public error (time: number, err: Error): void {
-    const s = this.sinks
-    for (let i = 0; i < s.length; ++i) {
-      s[i].error(time, err)
-    }
+   this.sink.error(time, err)
   }
 }
 
 function dispose<T> (disposable: Disposable<T>): void {
   disposable.dispose()
-}
-
-function tryEvent<T> (time: number, value: T, sink: Sink<T>): void {
-  try {
-    sink.event(time, value)
-  } catch (e) {
-    sink.error(time, e)
-  }
-}
-
-function tryEnd<T> (time: number, value: T, sink: Sink<T>): void {
-  try {
-    sink.end(time, value)
-  } catch (e) {
-    sink.error(time, e)
-  }
 }

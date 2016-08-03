@@ -702,6 +702,28 @@
 	        : stream.source;
 	}
 
+	var IndexSink = function IndexSink(index, sink) {
+	    this.index = index;
+	    this.sink = sink;
+	    this.active = true;
+	    this.value = void 0;
+	};
+	IndexSink.prototype.event = function event (time, value) {
+	    if (!this.active)
+	        return;
+	    this.value = value;
+	    this.sink.event(time, { index: this.index, value: this.value });
+	};
+	IndexSink.prototype.error = function error (time, err) {
+	    this.sink.error(time, err);
+	};
+	IndexSink.prototype.end = function end (time, value) {
+	    if (!this.active)
+	        return;
+	    this.active = false;
+	    this.sink.end(time, { index: this.index, value: value });
+	};
+
 	exports.Stream = Stream;
 	exports.defaultScheduler = defaultScheduler;
 	exports.PropagateTask = PropagateTask;
@@ -711,6 +733,8 @@
 	exports.getSource = getSource;
 	exports.BasicSubscription = BasicSubscription;
 	exports.SubscriberSink = SubscriberSink;
+	exports.IndexSink = IndexSink;
+	exports.Multicast = Multicast;
 
 	Object.defineProperty(exports, '__esModule', { value: true });
 

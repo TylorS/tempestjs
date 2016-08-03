@@ -25,8 +25,6 @@ PACKAGES.forEach(package => {
   const DEPENDENCIES = Object.keys(PACKAGEJSON.dependencies)
   const DEVDEPENDENCIES = Object.keys(PACKAGEJSON.devDependencies)
 
-  console.log(`> ${package} :`)
-
   // make the node_modules directory if it doesn't exist
   makeDir(NODE_MODULES)
 
@@ -36,38 +34,20 @@ PACKAGES.forEach(package => {
       // get the 'foo' from @tempest/foo
       const DEP_NAME = strip(dependency)
 
-      // make node_modules/@tempest dir
-      makeDir(TEMPEST_NODEMODULE_DIR)
-
-      // the directory we'd like to symlink
-      const TARGET = join(TEMPEST_NODEMODULE_DIR, DEP_NAME)
-
-      function makeLink (err) {
+      mkdirp(TEMPEST_NODEMODULE_DIR, (err) => {
         if (err) throw err
-        console.log(`  - symlinking to ${dependency}`)
-        const PACKAGE_TO_SYMLINK = join(PACKAGE_DIR, DEP_NAME) 
-        symlink(PACKAGE_TO_SYMLINK, TARGET, 'dir')
-      }
 
-      // only symlink if it doesn't already exist
-      try {
-        // if directory exists and is already symlinked
-        // throws if TARGET does not exist
-        if (isSymbolicLink(TARGET)) {
-          console.log(`  - symlink to ${dependency} already exists!`)
-        }
-      } catch (e) {
-        // directory already exists but is not our symlink
-        try {
-          // if directory exists and is not already symlinked
-          // throws if TARGET does not exist
-          if (isDirectory(TARGET)) {
-            rimraf(TARGET, fs, makeLink)
-          }
-        } catch (e) {
-          makeLink()
-        }
-      }
+        // the directory we'd like to symlink
+        const TARGET = join(TEMPEST_NODEMODULE_DIR, DEP_NAME)
+        const PACKAGE_TO_SYMLINK = join(PACKAGE_DIR, DEP_NAME)
+
+        // delete TARGET and make the symlink
+        rimraf(TARGET, fs, (err) => {
+          if (err) throw err
+          console.log(`  - symlinking to ${dependency} in ${package}`)
+          symlink(PACKAGE_TO_SYMLINK, TARGET, 'dir')
+        })
+      })
     }
   }
 

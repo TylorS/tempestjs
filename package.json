@@ -5,18 +5,21 @@
   "devDependencies": {
     "commitizen": "^2.8.2",
     "cz-lerna-changelog": "^0.2.3",
+    "ejs": "^2.5.1",
     "ghooks": "^1.3.2",
     "lerna": "^2.0.0-beta.24",
     "lerna-semantic-release": "^4.0.2",
     "rimraf": "^2.5.3",
     "symlink-or-copy": "^1.1.3",
-    "tslint": "^3.13.0", 
+    "tslint": "^3.13.0",
     "typescript": "^1.8.10",
     "validate-commit-msg": "^2.6.1"
   },
   "scripts": {
+    "clean": "lerna clean --yes && rimraf packages/**/*.log packages/**/*.log.* && rimraf *.log && rimraf node_modules",
+    "scripts:new-package": "node _scripts/new-package.js",
     "scripts:symlink": "node _scripts/symlink-all-packages.js",
-    "postinstall": "lerna exec -- npm install && npm run scripts:symlink",
+    "postinstall": "lerna exec -- npm install && lerna --scope @tempest/core exec -- npm run build && npm run scripts:symlink",
     "lint": "lerna run lint",
     "build": "lerna run build",
     "test": "lerna run test",
