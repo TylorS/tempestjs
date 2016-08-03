@@ -1,6 +1,6 @@
 {
   "name": "@tempest/periodic",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "periodic factory for tempest",
   "main": "dist/tempest-periodic.js",
   "scripts": {
