@@ -1,6 +1,6 @@
 {
   "name": "@tempest/remember",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "remember operator for tempest",
   "main": "dist/tempest-remember.js",
   "scripts": {
