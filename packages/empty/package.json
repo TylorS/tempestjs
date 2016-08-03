@@ -1,6 +1,6 @@
 {
   "name": "@tempest/empty",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "empty factory for tempest",
   "main": "dist/tempest-empty.js",
   "scripts": {
