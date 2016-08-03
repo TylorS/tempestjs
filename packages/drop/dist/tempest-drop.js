@@ -4,9 +4,13 @@
     (factory((global.tempestDrop = global.tempestDrop || {}),global.tempestCore));
 }(this, function (exports,_tempest_core) { 'use strict';
 
-    function drop(amount, stream) {
-        return new _tempest_core.Stream(new Drop(amount, stream.source));
-    }
+    var drop = function (amount, stream) {
+        switch (arguments.length) {
+            case 1: return function (stream) { return new _tempest_core.Stream(new Drop(amount, stream.source)); };
+            case 2: return new _tempest_core.Stream(new Drop(amount, stream.source));
+            default: return drop;
+        }
+    };
     var Drop = function Drop(amount, source) {
         this.amount = amount;
         this.source = source;

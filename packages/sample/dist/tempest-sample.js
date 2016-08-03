@@ -4,9 +4,13 @@
     (factory((global.tempestSample = global.tempestSample || {}),global.tempestCore));
 }(this, function (exports,_tempest_core) { 'use strict';
 
-    function sample(sampler, stream) {
-        return new _tempest_core.Stream(new Sample(sampler.source, stream.source));
-    }
+    var sample = function (sampler, stream) {
+        switch (arguments.length) {
+            case 1: return function (stream) { return new _tempest_core.Stream(new Sample(sampler.source, stream.source)); };
+            case 2: return new _tempest_core.Stream(new Sample(sampler.source, stream.source));
+            default: return sample;
+        }
+    };
     var Sample = function Sample(sampler, source) {
         this.sampler = sampler;
         this.source = source;

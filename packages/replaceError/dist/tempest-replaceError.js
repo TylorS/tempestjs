@@ -4,9 +4,13 @@
     (factory((global.tempestReplaceError = global.tempestReplaceError || {}),global.tempestCore));
 }(this, function (exports,_tempest_core) { 'use strict';
 
-    function replaceError(f, stream) {
-        return new _tempest_core.Stream(new ReplaceError(f, stream.source));
-    }
+    var replaceError = function (f, stream) {
+        switch (arguments.length) {
+            case 1: return function (stream) { return new _tempest_core.Stream(new ReplaceError(f, stream.source)); };
+            case 2: return new _tempest_core.Stream(new ReplaceError(f, stream.source));
+            default: return replaceError;
+        }
+    };
     var ReplaceError = function ReplaceError(f, source) {
         this.f = f;
         this.source = source;

@@ -4,12 +4,20 @@
     (factory((global.tempestMap = global.tempestMap || {}),global.tempestCore));
 }(this, function (exports,_tempest_core) { 'use strict';
 
-    function map(f, stream) {
-        return new _tempest_core.Stream(new Map(f, _tempest_core.getSource(stream)));
-    }
-    function mapTo(value, stream) {
-        return map(function () { return value; }, stream);
-    }
+    var map = function (f, stream) {
+        switch (arguments.length) {
+            case 1: return function (stream) { return new _tempest_core.Stream(new Map(f, stream.source)); };
+            case 2: return new _tempest_core.Stream(new Map(f, stream.source));
+            default: return map;
+        }
+    };
+    var mapTo = function (value, stream) {
+        switch (arguments.length) {
+            case 1: return function (stream) { return map(function () { return value; }, stream); };
+            case 2: return map(function () { return value; }, stream);
+            default: return mapTo;
+        }
+    };
     var Map = function Map(f, source) {
         this.f = f;
         this.source = source;

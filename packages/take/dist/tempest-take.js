@@ -4,9 +4,13 @@
     (factory((global.tempestTake = global.tempestTake || {}),global.tempestCore));
 }(this, function (exports,_tempest_core) { 'use strict';
 
-    function take(amount, stream) {
-        return new _tempest_core.Stream(new Take(amount, stream.source));
-    }
+    var take = function (amount, stream) {
+        switch (arguments.length) {
+            case 1: return function (stream) { return new _tempest_core.Stream(new Take(amount, stream.source)); };
+            case 2: return new _tempest_core.Stream(new Take(amount, stream.source));
+            default: return take;
+        }
+    };
     var Take = function Take(amount, source) {
         this.amount = amount;
         this.source = source;

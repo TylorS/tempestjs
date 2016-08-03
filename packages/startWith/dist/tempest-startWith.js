@@ -4,9 +4,13 @@
     (factory((global.tempestStartWith = global.tempestStartWith || {}),global.tempestCore));
 }(this, function (exports,_tempest_core) { 'use strict';
 
-    function startWith(value, stream) {
-        return new _tempest_core.Stream(new StartWith(value, stream.source));
-    }
+    var startWith = function (value, stream) {
+        switch (arguments.length) {
+            case 1: return function (stream) { return new _tempest_core.Stream(new StartWith(value, stream.source)); };
+            case 2: return new _tempest_core.Stream(new StartWith(value, stream.source));
+            default: return startWith;
+        }
+    };
     var StartWith = function StartWith(value, source) {
         this.value = value;
         this.source = source;

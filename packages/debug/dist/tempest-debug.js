@@ -4,9 +4,13 @@
     (factory((global.tempestDebug = global.tempestDebug || {}),global.tempestCore));
 }(this, function (exports,_tempest_core) { 'use strict';
 
-    function debug(infoOrSpy, stream) {
-        return new _tempest_core.Stream(new Debug(infoOrSpy, stream.source));
-    }
+    var debug = function (infoOrSpy, stream) {
+        switch (arguments.length) {
+            case 1: return function (stream) { return new _tempest_core.Stream(new Debug(infoOrSpy, stream.source)); };
+            case 2: return new _tempest_core.Stream(new Debug(infoOrSpy, stream.source));
+            default: return debug;
+        }
+    };
     var Debug = function Debug(infoOrSpy, source) {
         this.infoOrSpy = infoOrSpy;
         this.source = source;

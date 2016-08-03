@@ -4,9 +4,13 @@
     (factory((global.tempestEndWhen = global.tempestEndWhen || {}),global.tempestCore));
 }(this, function (exports,_tempest_core) { 'use strict';
 
-    function endWhen(signal, stream) {
-        return new _tempest_core.Stream(new EndWhen(signal.source, stream.source));
-    }
+    var endWhen = function (signal, stream) {
+        switch (arguments.length) {
+            case 1: return function (stream) { return new _tempest_core.Stream(new EndWhen(signal.source, stream.source)); };
+            case 2: return new _tempest_core.Stream(new EndWhen(signal.source, stream.source));
+            default: return endWhen;
+        }
+    };
     var EndWhen = function EndWhen(signal, source) {
         this.signal = signal;
         this.source = source;

@@ -4,9 +4,13 @@
     (factory((global.tempestFilter = global.tempestFilter || {}),global.tempestCore));
 }(this, function (exports,_tempest_core) { 'use strict';
 
-    function filter(predicate, stream) {
-        return new _tempest_core.Stream(new Filter(predicate, stream.source));
-    }
+    var filter = function (predicate, stream) {
+        switch (arguments.length) {
+            case 1: return function (stream) { return new _tempest_core.Stream(new Filter(predicate, stream.source)); };
+            case 2: return new _tempest_core.Stream(new Filter(predicate, stream.source));
+            default: return filter;
+        }
+    };
     var Filter = function Filter(predicate, source) {
         this.predicate = predicate;
         this.source = source;

@@ -4,9 +4,14 @@
     (factory((global.tempestFold = global.tempestFold || {}),global.tempestCore));
 }(this, function (exports,_tempest_core) { 'use strict';
 
-    function fold(f, seed, stream) {
-        return new _tempest_core.Stream(new Fold(f, seed, stream.source));
-    }
+    var fold = function (f, seed, stream) {
+        switch (arguments.length) {
+            case 1: return function (seed, stream) { return fold(f, seed, stream); };
+            case 2: return function (stream) { return fold(f, seed, stream); };
+            case 3: return new _tempest_core.Stream(new Fold(f, seed, stream.source));
+            default: return fold;
+        }
+    };
     var Fold = function Fold(f, seed, source) {
         this.f = f;
         this.seed = seed;
