@@ -1,6 +1,6 @@
 {
   "name": "@tempest/flatten",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "flatten operator for tempest",
   "main": "dist/tempest-flatten.js",
   "jsnext:main": "lib/index.js",
