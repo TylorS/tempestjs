@@ -1,7 +1,21 @@
 import { Stream, Source, Sink, Disposable, Scheduler } from '@tempest/core'
 
-export function endWhen<T> (signal: Stream<any>, stream: Stream<T>) {
-  return new Stream<T>(new EndWhen<T>(signal.source, stream.source))
+export interface EndWhenCurried {
+  <T>(): (signal: Stream<any>, stream: Stream<T>) => Stream<T>
+  <T>(signal: Stream<any>): <T>(stream: Stream<T>) => Stream<T>
+  <T>(signal: Stream<any>, stream: Stream<T>): Stream<T>
+}
+
+export const endWhen: EndWhenCurried = <EndWhenCurried> function <T>(signal: Stream<any>, stream: Stream<T>):
+  Stream<T> |
+  ((stream: Stream<T>) => Stream<T>) |
+  ((signal: Stream<any>, stream: Stream<T>) => Stream<T>)
+{
+  switch (arguments.length) {
+    case 1: return function <T> (stream: Stream<T>) { return new Stream<T>(new EndWhen<T>(signal.source, stream.source)) }
+    case 2: return new Stream<T>(new EndWhen<T>(signal.source, stream.source))
+    default: return endWhen
+  }
 }
 
 export class EndWhen<T> implements Source<T> {

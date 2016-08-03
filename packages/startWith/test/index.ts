@@ -17,4 +17,18 @@ describe('@tempest/startWith', () => {
       complete: () => done()
     })
   })
+
+  it ('should be curried', (done) => {
+    const startWithZero = startWith(0)
+    const stream = startWithZero(Stream.of(1, 2, 3))
+    const expected = [0, 1, 2, 3]
+
+    stream.subscribe({
+      next: (x: number) => {
+        assert(x === expected.shift())
+      },
+      error: done,
+      complete: () => done()
+    })
+  })
 })

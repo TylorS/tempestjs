@@ -1,7 +1,18 @@
 import { Stream, Source, Sink, Disposable, Scheduler } from '@tempest/core'
 
-export function replaceError<T> (f: (err: Error) => Stream<T>, stream: Stream<T>) {
-  return new Stream<T>(new ReplaceError<T>(f, stream.source))
+export interface ReplaceErrorCurried {
+  <T>(): (f: (err: Error) => Stream<T>, stream: Stream<T>) => Stream<T>
+  <T>(f: (err: Error) => Stream<T>): (stream: Stream<T>) => Stream<T>
+  <T>(f: (err: Error) => Stream<T>, stream: Stream<T>): Stream<T>
+}
+
+export const replaceError: ReplaceErrorCurried = <ReplaceErrorCurried> function <T>(f: (err: Error) => Stream<T>, stream: Stream<T>):
+  Stream<T> | ((stream: Stream<T>) => Stream<T>) | ((f: (err: Error) => Stream<T>, stream: Stream<T>) => Stream<T>) {
+  switch (arguments.length) {
+    case 1: return function (stream: Stream<T>) { return new Stream<T>(new ReplaceError<T>(f, stream.source)) }
+    case 2: return new Stream<T>(new ReplaceError<T>(f, stream.source))
+    default: return replaceError
+  }
 }
 
 export class ReplaceError<T> implements Source<T> {

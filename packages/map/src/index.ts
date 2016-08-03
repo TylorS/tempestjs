@@ -1,11 +1,33 @@
-import { Stream, Source, Sink, Scheduler, Disposable, getSource } from '@tempest/core'
+import { Stream, Source, Sink, Scheduler, Disposable } from '@tempest/core'
 
-export function map<T, R> (f: (t: T) => R, stream: Stream<T>): Stream<R> {
-  return new Stream<R>(new Map<T, R>(f, getSource(stream)))
+export interface CurriedMap {
+  <T, R>(): (f: (t: T) => R, stream: Stream<T>) => Stream<R>
+  <T, R>(f: (t: T) => R): (stream: Stream<T>) => Stream<R>
+  <T, R>(f: (t: T) => R, stream: Stream<T>): Stream<R>
 }
 
-export function mapTo<T, R>(value: R, stream: Stream<T>): Stream<R> {
-  return map<T, R>(() => value, stream)
+export const map: CurriedMap = <CurriedMap> function <T, R>(f: (t: T) => R, stream: Stream<T>): Stream<R> | ((stream: Stream<T>) => Stream<R>) |
+  ((f: (t: T) => R, stream: Stream<T>) => Stream<R>) {
+  switch (arguments.length) {
+    case 1: return function (stream: Stream<T>)  { return new Stream<R>(new Map<T, R>(f, stream.source)) }
+    case 2: return new Stream<R>(new Map<T, R>(f, stream.source))
+    default: return map
+  }
+}
+
+export interface CurriedMapTo {
+  <T, R>(): (value: R, stream: Stream<T>) => Stream<R>
+  <T, R>(value: R): (stream: Stream<T>) => Stream<R>
+  <T, R>(value: R, stream: Stream<T>): Stream<R>
+}
+
+export const mapTo: CurriedMapTo = <CurriedMapTo> function <T, R>(value: R, stream: Stream<T>): Stream<R> |
+  ((stream: Stream<T>) => Stream<R>) | ((value: R, stream: Stream<T>) => Stream<R>) {
+  switch (arguments.length) {
+    case 1: return function (stream: Stream<T>) { return map(() => value, stream) }
+    case 2: return map(() => value, stream)
+    default: return mapTo
+  }
 }
 
 export class Map<T, R> implements Source<R> {

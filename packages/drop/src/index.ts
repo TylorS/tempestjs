@@ -1,7 +1,20 @@
 import { Stream, Source, Sink, Scheduler, Disposable} from '@tempest/core'
 
-export function drop<T> (amount: number, stream: Stream<T>): Stream<T> {
-  return new Stream<T>(new Drop<T>(amount, stream.source))
+export interface DropCurried {
+  <T>(): (amount: number, stream: Stream<T>) => Stream<T>
+  <T>(amount: number): <T>(stream: Stream<T>) => Stream<T>
+  <T>(amount: number, stream: Stream<T>): Stream<T>
+}
+
+export const drop: DropCurried = <DropCurried> function (amount: number , stream: Stream<any>):
+  ((amount: number, stream: Stream<any>) => Stream<any>) |
+  ((stream: Stream<any>) => Stream<any>) |
+  Stream<any> {
+  switch (arguments.length) {
+    case 1: return function (stream: Stream<any>) { return new Stream<any>(new Drop<any>(amount, stream.source)) }
+    case 2: return new Stream<any>(new Drop<any>(amount, stream.source))
+    default: return drop
+  }
 }
 
 class Drop<T> implements Source<T> {

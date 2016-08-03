@@ -1,7 +1,18 @@
 import { Stream, Source, Sink, Scheduler, Disposable} from '@tempest/core'
 
-export function take<T> (amount: number, stream: Stream<T>): Stream<T> {
-  return new Stream<T>(new Take<T>(amount, stream.source))
+export interface TakeCurried {
+  <T>(): (amount: number, stream: Stream<T>) => Stream<T>
+  <T>(amount: number): <T>(stream: Stream<T>) => Stream<T>
+  <T>(amount: number, stream: Stream<T>): Stream<T>
+}
+
+export const take: TakeCurried = <TakeCurried> function <T>(amount: number, stream: Stream<T>): Stream<T> |
+  ((stream: Stream<T>) => Stream<T>) | ((amount: number, stream: Stream<T>) => Stream<T>) {
+  switch (arguments.length) {
+    case 1: return function (stream: Stream<T>) { return new Stream<T>(new Take<T>(amount, stream.source)) }
+    case 2: return new Stream<T>(new Take<T>(amount, stream.source))
+    default: return take
+  }
 }
 
 class Take<T> implements Source<T> {

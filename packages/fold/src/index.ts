@@ -1,7 +1,27 @@
 import { Stream, Source, Sink, Disposable, Scheduler, PropagateTask } from '@tempest/core'
 
-export function fold<T, R> (f: (acc: R, val: T) => R, seed: R, stream: Stream<T>): Stream<R> {
-  return new Stream<R>(new Fold<T, R>(f, seed, stream.source))
+export interface FoldCurried {
+ <T, R>(): (f: (acc: R, val: T) => R, seed: R, stream: Stream<T>) => Stream<R>
+ <T, R>(f: (acc: R, value: T) => R): FoldCurried2
+ <T, R>(f: (acc: R, value: T) => R, seed: R): (stream: Stream<T>) => Stream<R>
+ <T, R>(f: (acc: R, value: T) => R, seed: R, stream: Stream<T>): Stream<R>
+}
+
+export interface FoldCurried2 {
+  <T, R>(): (seed: R, stream: Stream<T>) => Stream<R>
+  <T, R>(seed: R): (stream: Stream<T>) => Stream<R>
+  <T, R>(seed: R, stream: Stream<T>): Stream<T>
+}
+
+export const fold: FoldCurried = <FoldCurried> function <T, R>(f: (acc: R, value: T) => R, seed: R, stream: Stream<T>):
+  Stream<R> | ((stream: Stream<T>) => Stream<R>) | ((seed: R, stream: Stream<T>) => Stream<R>) |
+  ((f: (acc: R, value: T) => R, seed: R, stream: Stream<T>) => Stream<R>) {
+  switch (arguments.length) {
+    case 1: return function (seed: R, stream: Stream<T>) { return fold(f, seed, stream) }
+    case 2: return function (stream: Stream<T>) { return fold(f, seed, stream) }
+    case 3: return new Stream<R>(new Fold<T, R>(f, seed, stream.source))
+    default: return fold
+  }
 }
 
 export class Fold<T, R> implements Source<R> {

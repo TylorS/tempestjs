@@ -14,4 +14,15 @@ describe('@tempest/filter', () => {
       assert(x === expected.shift())
     }, done, () => done())
   })
+
+  it ('should be curried', (done) => {
+    const predicate = (x: number) => x > 2
+    const greaterThan2 = filter(predicate)
+    const stream: Stream<number> = greaterThan2(Stream.of(1, 2, 3))
+    const expected = [3]
+
+    stream.subscribe((x: number) => {
+      assert(x === expected.shift())
+    }, done, () => done())
+  })
 })

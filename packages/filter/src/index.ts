@@ -2,8 +2,20 @@ import { Stream, Source, Sink, Scheduler, Disposable } from '@tempest/core'
 
 export type PredicateFn<T> = (x: T) => boolean
 
-export function filter<T> (predicate: PredicateFn<T>, stream: Stream<T>): Stream<T> {
-  return new Stream<T>(new Filter<T>(predicate, stream.source))
+export interface FilterCurried {
+  <T>(): FilterCurried
+  <T>(predicate: PredicateFn<T>): <T>(stream: Stream<T>) => Stream<T>
+  <T>(predicate: PredicateFn<T>, stream: Stream<T>): Stream<T>
+}
+
+export const filter: FilterCurried = <FilterCurried> function <T>(predicate: PredicateFn<T>, stream: Stream<T>): Stream<T> |
+  ((stream: Stream<T>) => Stream<T>) |
+  ((predicate: PredicateFn<T>, stream: Stream<T>) => Stream<T>) {
+  switch (arguments.length) {
+    case 1: return function (stream: Stream<T>) { return new Stream<T>(new Filter<T>(predicate, stream.source)) }
+    case 2: return new Stream<T>(new Filter<T>(predicate, stream.source))
+    default: return filter
+  }
 }
 
 class Filter<T> implements Source<T> {
