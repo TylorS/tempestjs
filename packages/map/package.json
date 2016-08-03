@@ -1,6 +1,6 @@
 {
   "name": "@tempest/map",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Map operator for tempest",
   "main": "dist/tempest-map.js",
   "jsnext:main": "lib/index.js",
