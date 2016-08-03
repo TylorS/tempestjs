@@ -3,6 +3,8 @@
   "version": "1.1.1",
   "description": "take operator for tempest",
   "main": "dist/tempest-take.js",
+  "jsnext:main": "lib/index.js",
+  "typings": "lib/index.d.ts",
   "scripts": {
     "lint": "tslint -c ../../tslint.json src/*.ts src/**/*.ts",
     "unit-test": "mocha --compilers ts:espower-typescript/guess -r ts-node/register test/*.ts test/**/*.ts",
