@@ -1,6 +1,6 @@
 {
   "name": "@tempest/merge",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "merge operator for tempest",
   "main": "dist/tempest-merge.js",
   "jsnext:main": "lib/index.js",
