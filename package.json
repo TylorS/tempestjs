@@ -17,11 +17,12 @@
   },
   "scripts": {
     "clean": "lerna clean --yes && rimraf packages/**/*.log packages/**/*.log.* && rimraf *.log && rimraf node_modules",
+    "scripts:run": "node _scripts/run-all-packages.js",
     "scripts:new-package": "node _scripts/new-package.js",
     "scripts:symlink": "node _scripts/symlink-all-packages.js",
     "postinstall": "lerna exec -- npm install && lerna --scope @tempest/core exec -- npm run build && npm run scripts:symlink",
     "lint": "lerna run lint",
-    "build": "lerna run build",
+    "build": "npm run scripts:symlink && npm run scripts:run build",
     "test": "lerna run test",
     "commit": "git cz",
     "release:pre": "lerna-semantic-release pre",
