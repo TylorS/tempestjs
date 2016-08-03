@@ -1,7 +1,11 @@
-import { Stream, Source, Sink, Disposable, Scheduler, getSource, IndexSink, IndexedValue } from '@tempest/core'
+import { Stream, Source, Sink, Disposable, Scheduler, IndexSink, IndexedValue } from '@tempest/core'
 
 export function merge<T> (streams: Stream<T>[]): Stream<T> {
   return new Stream<T>(new Merge<T>(streams.map(getSource)))
+}
+
+function getSource<T> (stream: Stream<T>): Source<T> {
+  return stream.source
 }
 
 export class Merge<T> implements Source<T> {
