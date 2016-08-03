@@ -1,6 +1,6 @@
 {
   "name": "@tempest/fold",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "fold operator for tempest",
   "main": "dist/tempest-fold.js",
   "jsnext:main": "lib/index.js",
