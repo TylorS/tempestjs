@@ -1,6 +1,6 @@
 {
   "name": "@tempest/proxy",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "proxy operator for tempest",
   "main": "dist/tempest-proxy.js",
   "scripts": {
