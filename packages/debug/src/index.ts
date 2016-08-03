@@ -7,8 +7,22 @@ export interface DebugSubscriber<T> {
   dispose?: () => any
 }
 
-export function debug<T> (infoOrSpy: string | DebugSubscriber<T>, stream: Stream<T>) {
-  return new Stream<T>(new Debug<T>(infoOrSpy, stream.source))
+export interface CurriedDebug {
+  <T>(): (infoOrSpy: string | DebugSubscriber<T>, stream: Stream<T>) => Stream<T>
+  <T>(infoOrSpy: string | DebugSubscriber<T>): <T>(stream: Stream<T>) => Stream<T>
+  <T>(infoOrSpy: string | DebugSubscriber<T>, stream: Stream<T>): Stream<T>
+}
+
+export const debug: CurriedDebug = <CurriedDebug> function (infoOrSpy: string | DebugSubscriber<any>, stream: Stream<any>):
+  ((infoOrSpy: string | DebugSubscriber<any>, stream: Stream<any>) => Stream<any>) |
+  ((stream: Stream<any>) => Stream<any>) |
+  Stream<any>
+{
+  switch (arguments.length) {
+    case 1: return function <T>(stream: Stream<T>): Stream<T> { return new Stream<any>(new Debug<any>(infoOrSpy, stream.source)) }
+    case 2: return new Stream<any>(new Debug<any>(infoOrSpy, stream.source))
+    default: return debug
+  }
 }
 
 export class Debug<T> implements Source<T> {
