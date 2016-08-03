@@ -1,6 +1,6 @@
 {
   "name": "@tempest/fromPromise",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "fromPromise factory for tempest",
   "main": "dist/tempest-fromPromise.js",
   "scripts": {
