@@ -1,6 +1,6 @@
 {
   "name": "@tempest/sample",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "sample operator for tempest",
   "main": "dist/tempest-sample.js",
   "jsnext:main": "lib/index.js",
