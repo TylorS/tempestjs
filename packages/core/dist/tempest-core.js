@@ -102,6 +102,75 @@
 	    return x != null && typeof x.length === 'number' && typeof x !== 'function';
 	}
 
+	function tryEvent(time, value, sink) {
+	    try {
+	        sink.event(time, value);
+	    }
+	    catch (e) {
+	        sink.error(time, e);
+	    }
+	}
+	function tryEnd(time, value, sink) {
+	    try {
+	        sink.end(time, value);
+	    }
+	    catch (e) {
+	        sink.error(time, e);
+	    }
+	}
+	var None = function None () {};
+
+	None.prototype.event = function event (t, x) { return void 0; };
+	None.prototype.end = function end (t, x) { return void 0; };
+	None.prototype.error = function error (t, x) { return void 0; };
+	var NONE$1 = new None();
+	function none() {
+	    return NONE$1;
+	}
+	function removeManyAt(i, sinks) {
+	    var updated = remove(i, sinks);
+	    // It's impossible to create a Many with 1 sink
+	    // so we can't end up with updated.length === 0 here
+	    return updated.length === 1 ? updated[0]
+	        : new Many(updated);
+	}
+	function removeMany(sink, many) {
+	    var sinks = many.sinks;
+	    var i = findIndex(sink, sinks);
+	    return i < 0 ? many : removeManyAt(i, sinks);
+	}
+	function addSink(sink, sinks) {
+	    return sinks === NONE$1 ? sink
+	        : sinks instanceof Many ? new Many(append(sink, sinks.sinks))
+	            : new Many([sinks, sink]);
+	}
+	function removeSink(sink, sinks) {
+	    return sinks === NONE$1 || sink === sinks ? NONE$1
+	        : sinks instanceof Many ? removeMany(sink, sinks)
+	            : sinks;
+	}
+	var Many = function Many(sinks) {
+	    this.sinks = sinks;
+	};
+	Many.prototype.event = function event (t, x) {
+	    var s = this.sinks;
+	    for (var i = 0; i < s.length; ++i) {
+	        tryEvent(t, x, s[i]);
+	    }
+	};
+	Many.prototype.end = function end (t, x) {
+	    var s = this.sinks;
+	    for (var i = 0; i < s.length; ++i) {
+	        tryEnd(t, x, s[i]);
+	    }
+	};
+	Many.prototype.error = function error (t, x) {
+	    var s = this.sinks;
+	    for (var i = 0; i < s.length; ++i) {
+	        s[i].error(t, x);
+	    }
+	};
+
 	var MulticastTask = function MulticastTask(run) {
 	    this._run = run;
 	    this.active = true;
@@ -142,8 +211,9 @@
 	var EMPTY = { dispose: function dispose$1() { return void 0; } };
 	var NONE = null;
 	var Multicast = function Multicast(source) {
+	    this.activeCount = 0;
 	    this.source = source;
-	    this.sinks = [];
+	    this.sink = none();
 	    this.disposable = EMPTY;
 	    this._stopId = NONE;
 	};
@@ -167,55 +237,29 @@
 	    Promise.resolve(disposable).then(dispose);
 	};
 	Multicast.prototype._add = function _add (sink) {
-	    this.sinks = append(sink, this.sinks);
-	    return this.sinks.length;
+	    this.sink = addSink(sink, this.sink);
+	    this.activeCount += 1;
+	    return this.activeCount;
 	};
 	Multicast.prototype._remove = function _remove (sink) {
-	    var index = findIndex(sink, this.sinks);
-	    if (index >= 0) {
-	        this.sinks = remove(index, this.sinks);
+	    var s = this.sink;
+	    this.sink = removeSink(sink, this.sink);
+	    if (s !== this.sink) {
+	        this.activeCount -= 1;
 	    }
-	    return this.sinks.length;
+	    return this.activeCount;
 	};
 	Multicast.prototype.event = function event (time, value) {
-	    var s = this.sinks;
-	    if (s.length === 1) {
-	        return s[0].event(time, value);
-	    }
-	    for (var i = 0; i < s.length; ++i) {
-	        tryEvent(time, value, s[i]);
-	    }
+	    this.sink.event(time, value);
 	};
 	Multicast.prototype.end = function end (time, value) {
-	    var s = this.sinks;
-	    for (var i = 0; i < s.length; ++i) {
-	        tryEnd(time, value, s[i]);
-	    }
+	    this.sink.end(time, value);
 	};
 	Multicast.prototype.error = function error (time, err) {
-	    var s = this.sinks;
-	    for (var i = 0; i < s.length; ++i) {
-	        s[i].error(time, err);
-	    }
+	    this.sink.error(time, err);
 	};
 	function dispose(disposable) {
 	    disposable.dispose();
-	}
-	function tryEvent(time, value, sink) {
-	    try {
-	        sink.event(time, value);
-	    }
-	    catch (e) {
-	        sink.error(time, e);
-	    }
-	}
-	function tryEnd(time, value, sink) {
-	    try {
-	        sink.end(time, value);
-	    }
-	    catch (e) {
-	        sink.error(time, e);
-	    }
 	}
 
 	var PredeterminedTask = function PredeterminedTask(delay, period, task, scheduler) {
@@ -724,6 +768,70 @@
 	    this.sink.end(time, { index: this.index, value: value });
 	};
 
+	/**
+	 * Takes a function with 1 argument and returns a curried version of it
+	 *
+	 * @export
+	 * @template A
+	 * @template B
+	 * @param {(a: A) => B} f
+	 * @returns {OneMore<A, B>}
+	 */
+	function curry1(f) {
+	    function curried(a) {
+	        switch (arguments.length) {
+	            case 0: return curried;
+	            case 1: return f(a);
+	            default: return curried;
+	        }
+	    }
+	    return curried;
+	}
+	/**
+	 * Takes a function with 2 arguments and returns a curried version of it
+	 *
+	 * @export
+	 * @template A
+	 * @template B
+	 * @template C
+	 * @param {(a: A, b: B) => C} f
+	 * @returns {TwoMore<A, B, C>}
+	 */
+	function curry2(f) {
+	    function curried(a, b) {
+	        switch (arguments.length) {
+	            case 0: return curried;
+	            case 1: return curry1(function (b) { return f(a, b); });
+	            case 2: return f(a, b);
+	            default: return curried;
+	        }
+	    }
+	    return curried;
+	}
+	/**
+	 * Takes a function with 3 arguments and returns a curried version
+	 *
+	 * @export
+	 * @template A
+	 * @template B
+	 * @template C
+	 * @template D
+	 * @param {(a: A, b: B, c: C) => D} f
+	 * @returns {ThreeMore<A, B, C, D>}
+	 */
+	function curry3(f) {
+	    function curried(a, b, c) {
+	        switch (arguments.length) {
+	            case 0: return curried;
+	            case 1: return curry2(function (b, c) { return f(a, b, c); });
+	            case 2: return curry1(function (c) { return f(a, b, c); });
+	            case 3: return f(a, b, c);
+	            default: return curried;
+	        }
+	    }
+	    return curried;
+	}
+
 	exports.Stream = Stream;
 	exports.defaultScheduler = defaultScheduler;
 	exports.PropagateTask = PropagateTask;
@@ -735,6 +843,9 @@
 	exports.SubscriberSink = SubscriberSink;
 	exports.IndexSink = IndexSink;
 	exports.Multicast = Multicast;
+	exports.curry1 = curry1;
+	exports.curry2 = curry2;
+	exports.curry3 = curry3;
 
 	Object.defineProperty(exports, '__esModule', { value: true });
 

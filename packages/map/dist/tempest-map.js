@@ -7,6 +7,9 @@
     function map(f, stream) {
         return new _tempest_core.Stream(new Map(f, _tempest_core.getSource(stream)));
     }
+    function mapTo(value, stream) {
+        return map(function () { return value; }, stream);
+    }
     var Map = function Map(f, source) {
         this.f = f;
         this.source = source;
@@ -30,6 +33,7 @@
     };
 
     exports.map = map;
+    exports.mapTo = mapTo;
     exports.Map = Map;
 
     Object.defineProperty(exports, '__esModule', { value: true });
