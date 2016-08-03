@@ -1,6 +1,6 @@
 {
   "name": "@tempest/throwError",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "throwError factory for tempest",
   "main": "dist/tempest-throwError.js",
   "scripts": {
