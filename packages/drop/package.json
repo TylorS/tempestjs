@@ -1,6 +1,6 @@
 {
   "name": "@tempest/drop",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "drop operator for tempest",
   "main": "dist/tempest-drop.js",
   "scripts": {
