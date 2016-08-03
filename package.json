@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "description": "This is a monorepo for the Tempest stream library",
   "devDependencies": {
+    "boxcutter": "^1.2.0",
     "commitizen": "^2.8.2",
     "cz-lerna-changelog": "^0.2.3",
     "ejs": "^2.5.1",
@@ -18,6 +19,7 @@
   "scripts": {
     "clean": "lerna clean --yes && rimraf packages/**/*.log packages/**/*.log.* && rimraf *.log && rimraf node_modules",
     "scripts:run": "node _scripts/run-all-packages.js",
+    "scripts:update-deps": "node _scripts/update-dependencies.js",
     "scripts:new-package": "node _scripts/new-package.js",
     "scripts:symlink": "node _scripts/symlink-all-packages.js",
     "postinstall": "lerna exec -- npm install && lerna --scope @tempest/core exec -- npm run build && npm run scripts:symlink",
