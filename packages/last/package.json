@@ -1,6 +1,6 @@
 {
   "name": "@tempest/last",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "last operator for tempest",
   "main": "dist/tempest-last.js",
   "scripts": {
