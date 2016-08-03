@@ -15,6 +15,21 @@ export const map: CurriedMap = <CurriedMap> function <T, R>(f: (t: T) => R, stre
   }
 }
 
+export interface CurriedMapTo {
+  <T, R>(): (value: R, stream: Stream<T>) => Stream<R>
+  <T, R>(value: R): (stream: Stream<T>) => Stream<R>
+  <T, R>(value: R, stream: Stream<T>): Stream<R>
+}
+
+export const mapTo: CurriedMapTo = <CurriedMapTo> function <T, R>(value: R, stream: Stream<T>): Stream<R> |
+  ((stream: Stream<T>) => Stream<R>) | ((value: R, stream: Stream<T>) => Stream<R>) {
+  switch (arguments.length) {
+    case 1: return function (stream: Stream<T>) { return map(() => value, stream) }
+    case 2: return map(() => value, stream)
+    default: return mapTo
+  }
+}
+
 export function mapTo<T, R>(value: R, stream: Stream<T>): Stream<R> {
   return map<T, R>(() => value, stream)
 }
