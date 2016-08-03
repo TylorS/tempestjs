@@ -17,7 +17,7 @@ function tryEnd<T> (time: number, value: T, sink: Sink<T>): void {
   }
 }
 
-class None implements Sink<any> {
+export class None implements Sink<any> {
   event (t: number, x: any): void { return void 0 }
   end (t: number, x?: any): void { return void 0 }
   error (t: number, x: Error): void { return void 0 }
@@ -54,7 +54,7 @@ export function removeSink<T> (sink: Sink<T>, sinks: Sink<T>): Sink<T> {
     : sinks
 }
 
-class Many<T> implements Sink<T> {
+export class Many<T> implements Sink<T> {
   constructor (public sinks: Sink<T>[]) {}
 
   event (t: number, x: T): void {
