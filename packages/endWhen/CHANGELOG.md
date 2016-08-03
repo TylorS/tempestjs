@@ -1,5 +1,10 @@
-<a name="1.1.0"></a>
-# 1.1.0 (2016-08-03)
+<a name="1.1.1"></a>
+## 1.1.1 (2016-08-03)
+
+
+### Bug Fixes
+
+* **meta:** update dependencies to latest version of core ([b6c03b1](https://github.com/TylorS/tempest/commit/b6c03b1))
 
 
 ### Features

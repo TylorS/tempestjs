@@ -5,6 +5,7 @@
 ### Bug Fixes
 
 * **map:** scheduler is no loger a generic ([44d92aa](https://github.com/TylorS/tempest/commit/44d92aa))
+* **meta:** update dependencies to latest version of core ([b6c03b1](https://github.com/TylorS/tempest/commit/b6c03b1))
 
 
 ### Features
