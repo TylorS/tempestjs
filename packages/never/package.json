@@ -33,7 +33,7 @@
   },
   "homepage": "https://github.com/TylorS/tempest#readme",
   "dependencies": {
-    "@tempest/core": "^0.0.2"
+    "@tempest/core": "^0.3.0"
   },
   "devDependencies": {
     "espower-typescript": "^5.0.1",
